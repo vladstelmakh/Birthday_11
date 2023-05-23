@@ -1,5 +1,4 @@
 
-
 from datetime import date
 
 class Field:
@@ -13,31 +12,44 @@ class Field:
         return self._value
 
 
-class Phone(Field):
+class Phone:
+    def __init__(self, value):
+        self._value = None
+        self.set_value(value)
+
     def set_value(self, value):
-       
         if self.is_valid_phone(value):
-            super().set_value(value)
+            self._value = value
         else:
-            raise ValueError("Invalid phone number")
+            raise ValueError("Недійсний номер телефону")
+
+    def get_value(self):
+        return self._value
 
     def is_valid_phone(self, value):
-        
+      
         return len(value) == 10 and value.isdigit()
 
 
-class Birthday(Field):
+
+class Birthday:
+    def __init__(self, value=None):
+        self._value = None
+        self.set_value(value)
+
     def set_value(self, value):
         
-        if self.is_valid_birthday(value):
-            super().set_value(value)
+        if self.is_valid_date(value):
+            self._value = value
         else:
-            raise ValueError("Wrong date of birth")
+            raise ValueError("Некоректна дата народження")
 
-    def is_valid_birthday(self, value):
+    def get_value(self):
+        return self._value
+
+    def is_valid_date(self, value):
         
-       
-        return isinstance(value, date)
+        return value is not None
 
     def days_to_birthday(self):
         if self._value:
@@ -61,13 +73,18 @@ class AddressBook:
         self.records = []
 
     def add_record(self, record):
+        # Перевірка, що переданий об'єкт є екземпляром класу Record
+        if not isinstance(record, Record):
+            raise TypeError("Об’єкт не є екземпляром класу Record")
+
+        
         self.records.append(record)
 
     def remove_record(self, record):
         self.records.remove(record)
 
     def iterator(self, page_size):
-        num_pages = (len(self.records) + page_size - 1) 
+        num_pages = (len(self.records) + page_size - 1) // page_size
         for page in range(num_pages):
             start = page * page_size
             end = start + page_size
@@ -78,13 +95,11 @@ def main():
     
     record1 = Record("John Doe", "3434567895", date(1991, 5, 11))
     record2 = Record("Jane Smith", "1276543211", date(1982, 4, 20))
-    record3 = Record("Bob Johnson")
 
-    
+   
     address_book = AddressBook()
     address_book.add_record(record1)
     address_book.add_record(record2)
-    address_book.add_record(record3)
 
     
     for page in address_book.iterator(page_size=2):
